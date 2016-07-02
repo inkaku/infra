@@ -1,71 +1,34 @@
+variable "admin_users" {}
+
+variable "member_users" {}
+
 provider "github" {
   organization = "inkaku"
 }
 
-resource "github_membership" "hiroqn" {
-  username = "hiroqn"
+resource "github_membership" "admin" {
+  count    = "${length(split(",", var.admin_users))}"
+  username = "${element(split(",", var.admin_users), count.index)}"
   role     = "admin"
 }
 
-resource "github_membership" "taketo957" {
-  username = "taketo957"
-  role     = "admin"
+resource "github_membership" "member" {
+  count    = "${length(split(",", var.member_users))}"
+  username = "${element(split(",", var.member_users), count.index)}"
+  role     = "member"
 }
 
-resource "github_membership" "omatty198" {
-  username = "omatty198"
-}
+module "team_inkaku" {
+  source = "./modules/team"
 
-resource "github_membership" "ryota-ka" {
-  username = "ryota-ka"
-}
+  name  = "inkaku"
+  users = "${concat(split(",", var.admin_users), split(",", var.member_users))}"
 
-resource "github_membership" "ytsk" {
-  username = "ytsk"
-}
-
-resource "github_membership" "takanarisun" {
-  username = "takanarisun"
-}
-
-resource "github_team" "inkaku" {
-  name        = "inkaku"
-  description = "all members"
-  privacy     = "closed"
-}
-
-resource "github_team_membership" "inkaku_hiroqn" {
-  team_id  = "${github_team.inkaku.id}"
-  username = "${github_membership.hiroqn.username}"
-}
-
-resource "github_team_membership" "inkaku_taketo957" {
-  team_id  = "${github_team.inkaku.id}"
-  username = "${github_membership.taketo957.username}"
-}
-
-resource "github_team_membership" "inkaku_omatty198" {
-  team_id  = "${github_team.inkaku.id}"
-  username = "${github_membership.omatty198.username}"
-}
-
-resource "github_team_membership" "inkaku_ryota-ka" {
-  team_id  = "${github_team.inkaku.id}"
-  username = "${github_membership.ryota-ka.username}"
-}
-
-resource "github_team_membership" "inkaku_ytsk" {
-  team_id  = "${github_team.inkaku.id}"
-  username = "${github_membership.ytsk.username}"
-}
-
-resource "github_team_membership" "inkaku_takanarisun" {
-  team_id  = "${github_team.inkaku.id}"
-  username = "${github_membership.takanarisun.username}"
+  description = "all users"
 }
 
 resource "github_team_repository" "dot_inkaku" {
-  team_id    = "${github_team.inkaku.id}"
+  team_id    = "${module.team_inkaku.id}"
   repository = ".inkaku"
   permission = "push"
 }
