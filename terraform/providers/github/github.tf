@@ -32,3 +32,9 @@ resource "github_team_repository" "dot_inkaku" {
   repository = ".inkaku"
   permission = "push"
 }
+
+resource "github_team_repository" "inkaku_dot_ink" {
+  team_id    = "${module.team_inkaku.id}"
+  repository = "inkaku.ink"
+  permission = "push"
+}
