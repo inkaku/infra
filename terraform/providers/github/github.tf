@@ -19,11 +19,9 @@ resource "github_membership" "member" {
 }
 
 module "team_inkaku" {
-  source = "./modules/team"
-
-  name  = "inkaku"
-  users = "${concat(split(",", var.admin_users), split(",", var.member_users))}"
-
+  source      = "./modules/team"
+  name        = "inkaku"
+  users       = "${concat(split(",", var.admin_users), split(",", var.member_users))}"
   description = "all users"
 }
 
